@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/lbhatti-risk/a-grc/schemas/supply-chain-map.json",
+  "title": "AI Supply Chain Trust Map",
+  "description": "Schema for mapping transitive trust relationships across an AI system supply chain. Designed for fraud detection AI in retail banking. Part of the A-GRC framework.",
+  "version": "1.0",
+  "type": "object",
+  "required": ["system", "trust_chain", "assessment_metadata"],
+  "properties": {
+
+    "assessment_metadata": {
+      "type": "object",
+      "description": "Metadata about this trust map assessment",
+      "required": ["created_by", "created_date", "system_name"],
+      "properties": {
+        "schema_version": { "type": "string", "const": "1.0" },
+        "created_by": { "type": "string" },
+        "created_date": { "type": "string", "format": "date" },
+        "last_updated": { "type": "string", "format": "date" },
+        "system_name": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "in-review", "approved", "archived"]
+        }
+      }
+    },
+
+    "system": {
+      "type": "object",
+      "description": "The AI system being assessed",
+      "required": ["name", "deployer", "use_case", "eu_ai_act_tier"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "deployer": {
+          "type": "object",
+          "properties": {
+            "organisation": { "type": "string" },
+            "business_line": { "type": "string" },
+            "eu_ai_act_role": {
+              "type": "string",
+              "enum": ["provider", "deployer", "both"]
+            }
+          }
+        },
+        "use_case": { "type": "string" },
+        "eu_ai_act_tier": {
+          "type": "string",
+          "enum": ["prohibited", "high-risk", "limited-risk", "minimal-risk", "gpai"]
+        },
+        "annex_reference": { "type": "string" }
+      }
+    },
+
+    "trust_chain": {
+      "type": "array",
+      "description": "Ordered list of entities in the AI supply chain, from deployer to most distal provider",
+      "items": {
+        "type": "object",
+        "required": ["layer", "entity_name", "eu_ai_act_role", "trust_controls"],
+        "properties": {
+
+          "layer": {
+            "type": "integer",
+            "description": "Position in supply chain. 1=deployer, 2=direct vendor, 3=sub-processor/foundation model, 4=training data vendor",
+            "minimum": 1,
+            "maximum": 5
+          },
+
+          "entity_name": { "type": "string" },
+
+          "entity_type": {
+            "type": "string",
+            "enum": [
+              "bank-internal",
+              "specialist-ai-vendor",
+              "cloud-ai-provider",
+              "foundation-model-provider",
+              "training-data-vendor",
+              "managed-service-provider",
+              "other"
+            ]
+          },
+
+          "eu_ai_act_role": {
+            "type": "string",
+            "enum": [
+              "provider",
+              "deployer",
+              "distributor",
+              "authorised-representative",
+              "gpai-model-provider",
+              "out-of-scope"
+            ]
+          },
+
+          "trust_controls": {
+            "type": "object",
+            "description": "Controls establishing trust at this layer",
+            "properties": {
+
+              "contractual": {
+                "type": "object",
+                "properties": {
+                  "contract_in_place": { "type": "boolean" },
+                  "ai_specific_clauses": { "type": "boolean" },
+                  "audit_rights": { "type": "boolean" },
+                  "incident_notification": { "type": "boolean" },
+                  "data_processing_agreement": { "type": "boolean" },
+                  "notes": { "type": "string" }
+                }
+              },
+
+              "technical": {
+                "type": "object",
+                "properties": {
+                  "model_card_available": { "type": "boolean" },
+                  "data_card_available": { "type": "boolean" },
+                  "explainability_api": { "type": "boolean" },
+                  "versioning_in_place": { "type": "boolean" },
+                  "access_logging": { "type": "boolean" },
+                  "pam_controls": {
+                    "type": "object",
+                    "description": "Privileged access controls (e.g. CyberArk)",
+                    "properties": {
+                      "pam_tool": { "type": "string" },
+                      "session_recording": { "type": "boolean" },
+                      "mfa_enforced": { "type": "boolean" },
+                      "api_key_rotation": { "type": "boolean" },
+                      "rotation_frequency_days": { "type": "integer" }
+                    }
+                  },
+                  "notes": { "type": "string" }
+                }
+              },
+
+              "governance": {
+                "type": "object",
+                "properties": {
+                  "eu_ai_act_conformity_certificate": { "type": "boolean" },
+                  "iso_42001_certified": { "type": "boolean" },
+                  "soc2_type2": { "type": "boolean" },
+                  "iso_27001_certified": { "type": "boolean" },
+                  "last_audit_date": { "type": "string", "format": "date" },
+                  "next_audit_date": { "type": "string", "format": "date" },
+                  "change_management": {
+                    "type": "object",
+                    "description": "Change management controls (e.g. ServiceNow integration)",
+                    "properties": {
+                      "tool": { "type": "string" },
+                      "model_changes_require_change_record": { "type": "boolean" },
+                      "retrain_triggers_change_record": { "type": "boolean" },
+                      "dual_approval_required": { "type": "boolean" }
+                    }
+                  },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          },
+
+          "trust_gaps": {
+            "type": "array",
+            "description": "Identified gaps in trust controls at this layer",
+            "items": {
+              "type": "object",
+              "required": ["gap_id", "description", "severity"],
+              "properties": {
+                "gap_id": { "type": "string" },
+                "description": { "type": "string" },
+                "gap_type": {
+                  "type": "string",
+                  "enum": ["contractual", "technical", "governance", "access-control"]
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": ["critical", "high", "medium", "low"]
+                },
+                "transitive_risk": {
+                  "type": "boolean",
+                  "description": "True if this gap propagates risk to upstream layers (e.g. bank inherits vendor's training data bias)"
+                },
+                "owner": { "type": "string" },
+                "remediation_action": { "type": "string" },
+                "target_date": { "type": "string", "format": "date" },
+                "status": {
+                  "type": "string",
+                  "enum": ["open", "in-progress", "closed", "accepted"]
+                }
+              }
+            }
+          },
+
+          "overall_trust_rating": {
+            "type": "string",
+            "description": "Assessor's overall trust rating for this layer",
+            "enum": ["trusted", "conditionally-trusted", "untrusted", "not-assessed"]
+          }
+        }
+      }
+    },
+
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total_layers_assessed": { "type": "integer" },
+        "trusted_layers": { "type": "integer" },
+        "conditionally_trusted_layers": { "type": "integer" },
+        "untrusted_layers": { "type": "integer" },
+        "total_trust_gaps": { "type": "integer" },
+        "critical_gaps": { "type": "integer" },
+        "transitive_risk_identified": { "type": "boolean" },
+        "overall_supply_chain_trust_rating": {
+          "type": "string",
+          "enum": ["green", "amber", "red"]
+        },
+        "assessor_conclusion": { "type": "string" },
+        "next_review_date": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}
