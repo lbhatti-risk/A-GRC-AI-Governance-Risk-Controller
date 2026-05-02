@@ -1,0 +1,247 @@
+# A-GRC Assessment Schema
+# Version: 1.0
+# Description: Schema for a structured EU AI Act readiness assessment
+#              for high-risk AI systems in financial services.
+# Usage: Complete one assessment file per AI system under review.
+#        This schema is designed for integration with GRC tooling
+#        (e.g. ServiceNow GRC module) via API or CI/CD pipeline.
+
+assessment:
+  metadata:
+    schema_version: "1.0"
+    framework: "A-GRC: AI Governance & Risk Controller"
+    created_by: ""           # Assessor name / team
+    created_date: ""         # ISO 8601 format: YYYY-MM-DD
+    last_updated: ""         # ISO 8601 format: YYYY-MM-DD
+    review_cycle: "annual"   # annual | semi-annual | triggered
+    status: "draft"          # draft | in-review | approved | archived
+
+  system:
+    name: ""                 # Name of the AI system
+    version: ""              # Version identifier
+    owner:
+      business_line: ""      # e.g. Retail Banking — Fraud Operations
+      product_owner: ""      # Named individual
+      second_line_owner: ""  # Named individual in risk / compliance
+    deployment_context: ""   # e.g. Real-time transaction fraud scoring
+    geography:               # Jurisdictions where system is deployed
+      - ""
+    eu_ai_act_classification:
+      risk_tier: ""          # prohibited | high-risk | limited-risk | minimal-risk | gpai
+      annex_reference: ""    # e.g. Annex III, Category 5(b)
+      classification_date: ""
+      classification_owner: ""
+      classification_rationale: ""
+
+  supply_chain:
+    providers:
+      - name: ""
+        layer: 0             # 1=direct vendor, 2=sub-processor, 3=foundation model, 4=data vendor
+        eu_ai_act_role: ""   # provider | deployer | distributor | gpai-provider | out-of-scope
+        contract_reviewed: false
+        audit_rights: false
+        model_card_available: false
+        data_card_available: false
+        last_assessed: ""
+        trust_gaps:
+          - gap_id: ""
+            description: ""
+            severity: ""     # critical | high | medium | low
+            owner: ""
+            remediation_due: ""
+            status: ""       # open | in-progress | closed
+
+  controls:
+    domains:
+
+      data_governance:
+        description: "Controls over training data quality, bias, and provenance"
+        controls:
+          - control_id: "DG-01"
+            title: "Training data documentation"
+            requirement: "Training data sources documented with provenance, collection method, and known limitations"
+            eu_ai_act_reference: "Article 10(2)"
+            nist_ai_rmf_reference: "MAP 2.1"
+            iso_42001_reference: "Clause 8.4"
+            status: ""       # not-assessed | compliant | partially-compliant | non-compliant | not-applicable
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "DG-02"
+            title: "Training data bias assessment"
+            requirement: "Training data assessed for demographic bias; results documented before model training"
+            eu_ai_act_reference: "Article 10(5)"
+            nist_ai_rmf_reference: "MAP 5.1"
+            iso_42001_reference: "Clause 8.4"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "DG-03"
+            title: "Data quality management"
+            requirement: "Data quality controls in place for input data at inference time; anomalies trigger alerts"
+            eu_ai_act_reference: "Article 10(3)"
+            nist_ai_rmf_reference: "MEASURE 2.5"
+            iso_42001_reference: "Clause 8.4"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+      model_governance:
+        description: "Controls over model development, testing, versioning, and change management"
+        controls:
+          - control_id: "MG-01"
+            title: "Model card / technical documentation"
+            requirement: "Technical documentation completed per Article 11 and Annex IV before deployment"
+            eu_ai_act_reference: "Article 11, Annex IV"
+            nist_ai_rmf_reference: "GOVERN 1.2"
+            iso_42001_reference: "Clause 7.5"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "MG-02"
+            title: "Pre-deployment accuracy and robustness testing"
+            requirement: "Model tested for accuracy, robustness, and cybersecurity resilience before deployment"
+            eu_ai_act_reference: "Article 15"
+            nist_ai_rmf_reference: "MEASURE 2.2"
+            iso_42001_reference: "Clause 8.5"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "MG-03"
+            title: "Model change management"
+            requirement: "All model changes (retraining, threshold updates, provider changes) logged as change events"
+            eu_ai_act_reference: "Article 9(5)"
+            nist_ai_rmf_reference: "GOVERN 6.1"
+            iso_42001_reference: "Clause 8.3"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "MG-04"
+            title: "Post-deployment performance monitoring"
+            requirement: "Ongoing monitoring of fraud detection rate, false positive rate, and demographic parity"
+            eu_ai_act_reference: "Article 72"
+            nist_ai_rmf_reference: "MEASURE 2.7"
+            iso_42001_reference: "Clause 9.1"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+      access_control:
+        description: "Controls over privileged access to model components, APIs, and inference infrastructure"
+        controls:
+          - control_id: "AC-01"
+            title: "Privileged access management — model weights"
+            requirement: "Access to model weights restricted to authorised personnel; managed via PAM tooling (e.g. CyberArk)"
+            eu_ai_act_reference: "Article 9(6), Article 15(5)"
+            nist_ai_rmf_reference: "GOVERN 6.2"
+            iso_42001_reference: "A.6.1 (Annex A)"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "AC-02"
+            title: "API key governance"
+            requirement: "Inference API keys rotated on defined schedule; access logged; unused keys revoked"
+            eu_ai_act_reference: "Article 15(5)"
+            nist_ai_rmf_reference: "GOVERN 6.2"
+            iso_42001_reference: "A.6.1 (Annex A)"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "AC-03"
+            title: "User access review — AI system components"
+            requirement: "Periodic UAR conducted for all users with privileged access to model pipeline"
+            eu_ai_act_reference: "Article 9(6)"
+            nist_ai_rmf_reference: "GOVERN 6.2"
+            iso_42001_reference: "A.6.2 (Annex A)"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+      human_oversight:
+        description: "Controls ensuring humans can understand, override, and intervene in AI decisions"
+        controls:
+          - control_id: "HO-01"
+            title: "Human override capability"
+            requirement: "Mechanism exists for a human to override, reverse, or escalate any AI fraud decision"
+            eu_ai_act_reference: "Article 14(4)"
+            nist_ai_rmf_reference: "MANAGE 4.1"
+            iso_42001_reference: "Clause 8.6"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "HO-02"
+            title: "Explainability for human reviewers"
+            requirement: "Human reviewers can access an explanation of why a transaction was flagged"
+            eu_ai_act_reference: "Article 14(2)(c)"
+            nist_ai_rmf_reference: "MEASURE 2.6"
+            iso_42001_reference: "Clause 8.6"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "HO-03"
+            title: "Human oversight training"
+            requirement: "Staff responsible for reviewing AI fraud decisions trained on system capabilities and limitations"
+            eu_ai_act_reference: "Article 14(3), Article 26(6)"
+            nist_ai_rmf_reference: "GOVERN 5.1"
+            iso_42001_reference: "Clause 7.2"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+      incident_response:
+        description: "Controls for detecting, reporting, and remediating AI system incidents"
+        controls:
+          - control_id: "IR-01"
+            title: "Serious incident reporting"
+            requirement: "Procedure in place to report serious incidents (as defined in Article 3(49)) to national authority"
+            eu_ai_act_reference: "Article 73"
+            nist_ai_rmf_reference: "MANAGE 2.4"
+            iso_42001_reference: "Clause 10.1"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+          - control_id: "IR-02"
+            title: "Incident log and root cause analysis"
+            requirement: "All AI-related incidents logged; root cause analysis completed within defined SLA"
+            eu_ai_act_reference: "Article 26(5)"
+            nist_ai_rmf_reference: "MANAGE 3.2"
+            iso_42001_reference: "Clause 10.1"
+            status: ""
+            evidence: ""
+            findings: ""
+            owner: ""
+
+  summary:
+    total_controls: 12
+    assessed: 0
+    compliant: 0
+    partially_compliant: 0
+    non_compliant: 0
+    not_applicable: 0
+    open_trust_gaps: 0
+    overall_readiness: ""    # red | amber | green
+    assessor_conclusion: ""
+    next_review_date: ""
