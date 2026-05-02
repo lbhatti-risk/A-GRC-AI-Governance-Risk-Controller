@@ -1,0 +1,127 @@
+# Risk Assessment Template — Synthetic Worked Example
+ 
+This is a synthetic, anonymised worked example of a completed A-GRC assessment. All entity names, system names, and specific details are fictional. This example demonstrates how the assessment framework is applied in practice.
+ 
+---
+ 
+## Assessment metadata
+ 
+| Field | Value |
+|-------|-------|
+| Schema version | 1.0 |
+| System name | FraudGuard ML — Transaction Scoring Engine |
+| System version | v3.2.1 |
+| Assessment date | 2026-04-01 |
+| Assessor | Model Risk Governance Team |
+| Business owner | Head of Fraud Operations, Retail Banking |
+| Second-line owner | Head of Model Risk |
+| Status | Approved |
+ 
+---
+ 
+## System classification
+ 
+| Field | Value |
+|-------|-------|
+| EU AI Act risk tier | HIGH-RISK |
+| Annex III reference | Category 5(b) — access to essential private services |
+| Deployment context | Real-time transaction fraud scoring across retail current account and card products |
+| Geographies | UK, Ireland, EU passporting jurisdictions |
+| Classification date | 2026-01-15 |
+| Classification owner | Head of Model Risk |
+ 
+**Classification rationale:** FraudGuard ML produces a real-time fraud probability score for each transaction. Scores above a defined threshold result in automated transaction blocking. This constitutes a materially automated decision affecting customer access to financial services. The decision is consequential — a false positive freezes a legitimate customer's account; a false negative enables fraud that causes customer harm. Classification as high-risk under Annex III Category 5(b) is confirmed.
+ 
+---
+ 
+## Supply chain summary
+ 
+| Layer | Entity | EU AI Act role | Trust rating | Open gaps |
+|-------|--------|----------------|--------------|-----------|
+| 1 | Retail Bank (deployer) | Deployer | — | — |
+| 2 | FraudTech Vendor Ltd (synthetic) | Provider | Conditionally trusted | 1 medium |
+| 3 | CloudAI Foundation Ltd (synthetic) | GPAI provider | Conditionally trusted | 1 high |
+| 4 | DataBroker Consortium (synthetic) | Out of scope (GDPR applies) | Not assessed | 1 high |
+ 
+**Open trust gaps:**
+ 
+| Gap ID | Layer | Description | Severity | Status |
+|--------|-------|-------------|----------|--------|
+| TG-01 | 3 | Foundation model provider does not offer audit rights over training data composition | High | Open — contractual negotiation in progress |
+| TG-02 | 4 | Training data vendor's GDPR Article 28 obligations not confirmed in FraudTech's sub-processor agreement | High | Open — TPRM review initiated |
+| TG-03 | 2 | FraudTech Vendor's ISO 42001 certification in progress — not yet achieved | Medium | In progress — certificate expected Q3 2026 |
+ 
+**Transitive trust assessment:** TG-01 and TG-02 represent transitive trust gaps. The bank cannot confirm the integrity of the foundation model's training data, and cannot confirm whether personal data of its customers was processed lawfully at layer 4. These gaps have been escalated to the CRO and accepted as residual risk pending resolution.
+ 
+---
+ 
+## Control assessment results
+ 
+### Data Governance
+ 
+| Control | Title | Status | Key finding |
+|---------|-------|--------|-------------|
+| DG-01 | Training data documentation | Partially compliant | Data card exists for primary dataset. Secondary dataset (behavioural signals) lacks a data card. Action raised. |
+| DG-02 | Training data bias assessment | Compliant | Bias assessment completed pre-deployment. Demographic parity confirmed within threshold across five customer segments. Documented and approved. |
+| DG-03 | Input data quality at inference time | Compliant | Quality rules defined for all 23 input features. Automated checks running. Alert log reviewed — no unresolved alerts in audit period. |
+ 
+### Model Governance
+ 
+| Control | Title | Status | Key finding |
+|---------|-------|--------|-------------|
+| MG-01 | Model card and technical documentation | Compliant | Model card complete. All Annex IV elements addressed. Version history complete through v3.2.1. |
+| MG-02 | Pre-deployment testing | Compliant | Test results obtained. Precision 94.2%, Recall 91.7%, F1 92.9%. Held-out test dataset confirmed. Second-line sign-off dated prior to go-live. |
+| MG-03 | Model change management | Partially compliant | Three retrains in audit period. Two have complete change records. One retrain (October) lacks a pre-implementation risk assessment — post-hoc document produced but does not satisfy pre-approval requirement. Finding raised. |
+| MG-04 | Post-deployment monitoring | Compliant | Daily performance monitoring active. Weekly fairness report produced. No threshold breaches in audit period. Annual validation completed January 2026 by independent team. |
+ 
+### Access Control
+ 
+| Control | Title | Status | Key finding |
+|---------|-------|--------|-------------|
+| AC-01 | Privileged access — model components | Partially compliant | PAM tooling in place. UAR conducted March 2026. One user (ML Engineer, role changed November 2025) retained inference API access for 47 days post-role change before revocation. SLA breach — finding raised. |
+| AC-02 | API key governance | Compliant | Key inventory complete. All keys rotated within 90-day policy. No orphaned keys identified. |
+| AC-03 | UAR — AI pipeline | Compliant | UAR scope confirmed to include all AI pipeline access vectors. No SoD exceptions identified. |
+ 
+### Human Oversight
+ 
+| Control | Title | Status | Key finding |
+|---------|-------|--------|-------------|
+| HO-01 | Human override capability | Compliant | Override mechanism documented and accessible. Override log reviewed — all decisions include required fields. Override rate stable at 3.2% of flagged transactions. |
+| HO-02 | Explainability for reviewers | Compliant | Explainability output confirmed for v3.2.1. Top three features driving score displayed to reviewer. Confirmed accessible without specialist knowledge. |
+| HO-03 | Human oversight training | Compliant | Training programme updated for v3.2.1. All 14 active reviewers confirmed as trained within required period. |
+ 
+### Incident Response
+ 
+| Control | Title | Status | Key finding |
+|---------|-------|--------|-------------|
+| IR-01 | Serious incident reporting | Compliant | Procedure current and references Article 3(49) and Article 73. No reportable incidents in audit period. |
+| IR-02 | Incident log and RCA | Partially compliant | Incident log reviewed. Three medium-severity incidents in audit period. Two have complete RCAs within SLA. One RCA (February) completed 12 days after incident — outside the 10-day SLA for medium severity. Finding raised. |
+ 
+---
+ 
+## Summary
+ 
+| Metric | Count |
+|--------|-------|
+| Total controls assessed | 12 |
+| Compliant | 7 |
+| Partially compliant | 4 |
+| Non-compliant | 0 |
+| Not applicable | 0 |
+| Open trust gaps | 3 |
+| Critical gaps | 0 |
+| High gaps | 2 |
+ 
+**Overall readiness rating: AMBER**
+ 
+**Assessor conclusion:** FraudGuard ML v3.2.1 demonstrates a broadly functional AI governance control environment. The system is correctly classified under the EU AI Act, pre-deployment testing and bias assessment are well-documented, and human oversight mechanisms are operating as designed. Four controls are partially compliant, with findings raised for the missing secondary dataset data card (DG-01), the incomplete October retrain change record (MG-03), the access revocation SLA breach (AC-01), and the overdue RCA (IR-02). Two high-severity supply chain trust gaps remain open. None of the findings individually prevent continued operation, but the combination of open supply chain gaps and the access revocation SLA breach warrants escalation to the AI Risk Governance Forum at the next quarterly meeting.
+ 
+**Next review date:** 2027-04-01 (annual), or earlier if triggered by a material model change or supply chain event.
+ 
+---
+ 
+*All entities, system names, metrics, and specific details in this document are synthetic and do not represent any real organisation, system, or engagement.*
+ 
+*Part of the A-GRC: AI Governance & Risk Controller framework*
+*Author: Layla Bhatti — github.com/lbhatti-risk*
+ 
